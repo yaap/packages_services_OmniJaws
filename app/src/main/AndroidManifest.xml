@@ -84,6 +84,16 @@
         <!-- name is used a prefix +"_" for images e.g. weather_<condition_id>
              weather_foo_<condition_id> -->
         <activity
+            android:name=".google"
+            android:exported="false"
+            android:label="Google">
+            <intent-filter>
+                <action android:name="org.omnirom.WeatherIconPack" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <activity
             android:name=".outline"
             android:exported="false"
             android:label="Outline">
