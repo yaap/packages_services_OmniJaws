@@ -2,25 +2,25 @@
     <style name="Weather" parent="TextAppearance.Material3.BodyMedium" >
         <item name="android:textSize">14sp</item>
         <item name="android:textStyle">normal</item>
-        <item name="android:fontFamily">sans-serif-condensed</item>
+        <item name="android:fontFamily">@*android:string/config_bodyFontFamily</item>
     </style>
 
     <style name="WeatherSmall" parent="TextAppearance.Material3.BodySmall" >
         <item name="android:textSize">12sp</item>
         <item name="android:textStyle">normal</item>
-        <item name="android:fontFamily">sans-serif-condensed</item>
+        <item name="android:fontFamily">@*android:string/config_bodyFontFamily</item>
     </style>
 
     <style name="WeatherLarge" parent="TextAppearance.Material3.BodyLarge" >
         <item name="android:textSize">20sp</item>
         <item name="android:textStyle">normal</item>
-        <item name="android:fontFamily">sans-serif-condensed</item>
+        <item name="android:fontFamily">@*android:string/config_bodyFontFamily</item>
     </style>
 
     <style name="WeatherMedium" parent="TextAppearance.Material3.BodyLarge" >
         <item name="android:textSize">18sp</item>
         <item name="android:textStyle">normal</item>
-        <item name="android:fontFamily">sans-serif-condensed</item>
+        <item name="android:fontFamily">@*android:string/config_bodyFontFamily</item>
     </style>
 
     <style name="Theme.Settings" parent="Theme.Material3.DayNight.NoActionBar">
@@ -72,7 +72,7 @@
     <style name="ForecastWeatherTextSmall" parent="@style/WeatherBaseText">
         <item name="android:textSize">@dimen/forecast_text_size_small</item>
         <item name="android:textStyle">normal</item>
-        <item name="android:fontFamily">sans-serif-condensed</item>
+        <item name="android:fontFamily">@*android:string/config_bodyFontFamily</item>
     </style>
 
     <style name="DetailedWeatherText" parent="@style/WeatherBaseText">
