@@ -113,6 +113,16 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".weatherclient"
+            android:exported="false"
+            android:label="Weather Client" >
+            <intent-filter>
+                <action android:name="org.omnirom.WeatherIconPack" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
         <receiver
             android:name=".widget.WeatherAppWidgetProvider"
             android:exported="true"
