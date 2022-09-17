@@ -49,19 +49,20 @@ import java.util.concurrent.Executors;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.WindowCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class LocationBrowseActivity extends AppCompatActivity {
+import com.android.settingslib.collapsingtoolbar.CollapsingToolbarBaseActivity;
+import com.android.settingslib.widget.R;
+
+public class LocationBrowseActivity extends CollapsingToolbarBaseActivity {
     private static final String TAG = "LocationBrowseActivity";
 
     public static final String DATA_LOCATION_NAME = "location_name";
     public static final String DATA_LOCATION_LAT = "location_lat";
     public static final String DATA_LOCATION_LON = "location_lon";
 
-    private MaterialToolbar mToolbar;
     private List<LocationBrowseItem> mLocationBrowseList = new ArrayList<>();
     private LocagtionListAdapter mAdapter;
     private ExecutorService mExecutorService = Executors.newSingleThreadExecutor();
@@ -165,11 +166,6 @@ public class LocationBrowseActivity extends AppCompatActivity {
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
 
         setContentView(R.layout.location_browse_activity);
-
-        mToolbar = findViewById(R.id.toolbar);
-
-        setSupportActionBar(mToolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         EditText queryPattern = findViewById(R.id.query_pattern_text);
         queryPattern.setHint(prefixTextWithIcon(this, R.drawable.ic_search, queryPattern.getHint()));
