@@ -1,7 +1,7 @@
 android_app {
   name: "OmniJaws",
   manifest: "app/src/main/AndroidManifest.xml",
-  sdk_version: "system_current",
+  platform_apis: true,
   system_ext_specific: true,
 
   libs: [
