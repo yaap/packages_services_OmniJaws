@@ -19,7 +19,7 @@
 <org.omnirom.omnijaws.DetailedWeatherView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="10dp">
+    android:layout_margin="10dp">
 
     <LinearLayout
         android:id="@+id/current_weather"
@@ -34,8 +34,8 @@
             android:ellipsize="end"
             android:gravity="center_horizontal"
             android:maxLines="2"
-            android:paddingStart="@dimen/activity_city_side_margin"
-            android:paddingEnd="@dimen/activity_city_side_margin"
+            android:layout_marginStart="@dimen/activity_city_side_margin"
+            android:layout_marginEnd="@dimen/activity_city_side_margin"
             android:textAppearance="@style/HeaderWeatherText" />
 
         <LinearLayout
@@ -367,6 +367,7 @@
 
         <ProgressBar
             style="?android:attr/progressBarStyle"
+            android:indeterminateTint="@android:color/white"
             android:layout_width="64dp"
             android:layout_height="64dp" />
 
@@ -377,8 +378,8 @@
         android:layout_height="wrap_content"
         android:layout_gravity="top"
         android:orientation="horizontal"
-        android:paddingStart="14dp"
-        android:paddingEnd="14dp">
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp">
 
         <ImageView
             android:id="@+id/settings"
