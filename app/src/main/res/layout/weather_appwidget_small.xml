@@ -34,7 +34,7 @@
         android:padding="@dimen/widget_padding_small">
 
         <LinearLayout
-            android:id="@+id/condition_line"
+            android:id="@+id/current_weather_line"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="center"

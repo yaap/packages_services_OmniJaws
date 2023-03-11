@@ -186,8 +186,9 @@ public class WeatherAppWidgetProvider extends AppWidgetProvider {
 
         if (weatherData == null) {
             Log.e(TAG, "updateWeather weatherData == null");
-            widget.setViewVisibility(R.id.condition_line, View.GONE);
+            widget.setViewVisibility(R.id.forecast_line, View.GONE);
             widget.setViewVisibility(R.id.current_weather_line, View.GONE);
+            widget.setViewVisibility(R.id.current_condition_line, View.GONE);
             widget.setViewVisibility(R.id.info_container, View.VISIBLE);
             widget.setTextViewText(R.id.info_text, context.getResources().getString(R.string.omnijaws_service_waiting));
             return;
@@ -252,8 +253,11 @@ public class WeatherAppWidgetProvider extends AppWidgetProvider {
         widget.setTextViewText(R.id.current_text, context.getResources().getText(R.string.omnijaws_current_text));
         widget.setTextViewText(R.id.current_data, currentData);
         widget.setTextViewText(R.id.current_weather_city, weatherData.city);
+        widget.setImageViewResource(R.id.current_humidity_image, R.drawable.ic_humidity_symbol_small);
         widget.setTextViewText(R.id.current_humidity, weatherData.humidity);
+        widget.setImageViewResource(R.id.current_wind_image, R.drawable.ic_wind_symbol_small);
         widget.setTextViewText(R.id.current_wind, weatherData.windSpeed + " " + weatherData.windUnits);
+        widget.setImageViewResource(R.id.current_wind_direction_image, R.drawable.ic_wind_direction_symbol_small);
         widget.setTextViewText(R.id.current_wind_direction, weatherData.pinWheel);
 
         Bundle options = appWidgetManager.getAppWidgetOptions(appWidgetId);
@@ -333,22 +337,25 @@ public class WeatherAppWidgetProvider extends AppWidgetProvider {
         widget.setOnClickPendingIntent(R.id.weather_data, getSettingsIntent(context));
 
         if (errorReason == EXTRA_ERROR_DISABLED) {
-            widget.setViewVisibility(R.id.condition_line, View.GONE);
+            widget.setViewVisibility(R.id.forecast_line, View.GONE);
             widget.setViewVisibility(R.id.current_weather_line, View.GONE);
+            widget.setViewVisibility(R.id.current_condition_line, View.GONE);
             widget.setViewVisibility(R.id.info_container, View.VISIBLE);
             widget.setTextViewText(R.id.info_text, context.getResources().getString(R.string.omnijaws_service_disabled));
         } else {
             // should never happen
-            widget.setViewVisibility(R.id.condition_line, View.GONE);
+            widget.setViewVisibility(R.id.forecast_line, View.GONE);
             widget.setViewVisibility(R.id.current_weather_line, View.GONE);
+            widget.setViewVisibility(R.id.current_condition_line, View.GONE);
             widget.setViewVisibility(R.id.info_container, View.VISIBLE);
             widget.setTextViewText(R.id.info_text, context.getResources().getString(R.string.omnijaws_service_unkown));
         }
     }
 
     private static void initWidget(RemoteViews widget) {
-        widget.setViewVisibility(R.id.condition_line, View.VISIBLE);
+        widget.setViewVisibility(R.id.forecast_line, View.VISIBLE);
         widget.setViewVisibility(R.id.current_weather_line, View.VISIBLE);
+        widget.setViewVisibility(R.id.current_condition_line, View.VISIBLE);
         widget.setViewVisibility(R.id.info_container, View.GONE);
     }
 

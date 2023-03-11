@@ -80,7 +80,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
-                            android:layout_marginStart="4dp"
+                            android:gravity="center_horizontal"
+                            android:minWidth="@dimen/widget_current_temp_width"
                             android:textAppearance="@style/WeatherMedium" />
 
                     </LinearLayout>
@@ -90,7 +91,6 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:layout_marginStart="10dp"
                     android:layout_weight="8"
                     android:orientation="vertical">
 
@@ -99,6 +99,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:ellipsize="end"
+                        android:gravity="center_horizontal"
                         android:maxLines="2"
                         android:textAppearance="@style/WeatherMedium" />
 
@@ -106,14 +107,19 @@
                         android:id="@+id/current_condition_line"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
                         android:orientation="horizontal">
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1" />
 
                         <ImageView
                             android:id="@+id/current_wind_image"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
-                            android:src="@drawable/ic_wind_symbol_small"
                             android:tint="?android:attr/textColorPrimary" />
 
                         <TextView
@@ -130,7 +136,6 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
                             android:layout_marginStart="4dp"
-                            android:src="@drawable/ic_wind_direction_symbol_small"
                             android:tint="?android:attr/textColorPrimary" />
 
                         <TextView
@@ -147,7 +152,6 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
                             android:layout_marginStart="4dp"
-                            android:src="@drawable/ic_humidity_symbol_small"
                             android:tint="?android:attr/textColorPrimary" />
 
                         <TextView
@@ -158,6 +162,10 @@
                             android:singleLine="true"
                             android:textAppearance="@style/WeatherSmall" />
 
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1" />
                     </LinearLayout>
                 </LinearLayout>
 
