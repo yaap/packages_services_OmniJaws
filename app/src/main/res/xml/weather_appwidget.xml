@@ -28,7 +28,7 @@
     android:previewLayout="@layout/weather_appwidget_wide_preview"
     android:resizeMode="vertical|horizontal"
     android:targetCellWidth="5"
-    android:targetCellHeight="2"
+    android:targetCellHeight="1"
     android:updatePeriodMillis="0"
     android:widgetCategory="home_screen"
     android:widgetFeatures="reconfigurable" />
