@@ -18,6 +18,7 @@
 package org.omnirom.omnijaws;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -29,12 +30,17 @@ import android.os.Handler;
 import android.provider.Settings;
 import android.text.TextUtils;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.omnirom.omnijaws.client.OmniJawsClient;
 import org.omnirom.omnijaws.widget.WeatherAppWidgetProvider;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AlertDialog;
 import androidx.preference.EditTextPreference;
 import androidx.preference.ListPreference;
@@ -45,8 +51,13 @@ import androidx.preference.PreferenceManager;
 import androidx.preference.PreferenceScreen;
 import androidx.preference.SwitchPreference;
 
+import static org.omnirom.omnijaws.AbstractWeatherProvider.PART_COORDINATES;
+import static org.omnirom.omnijaws.LocationBrowseActivity.DATA_LOCATION_LAT;
+import static org.omnirom.omnijaws.LocationBrowseActivity.DATA_LOCATION_LON;
+import static org.omnirom.omnijaws.LocationBrowseActivity.DATA_LOCATION_NAME;
+
 public class SettingsFragment extends PreferenceFragmentCompat implements OnPreferenceChangeListener,
-        WeatherLocationTask.Callback, OmniJawsClient.OmniJawsObserver {
+        OmniJawsClient.OmniJawsObserver {
 
     private static final String CHRONUS_ICON_PACK_INTENT = "com.dvtonder.chronus.ICON_PACK";
     private static final String DEFAULT_WEATHER_ICON_PACKAGE = "org.omnirom.omnijaws.outline";
@@ -58,18 +69,46 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnPref
     private SwitchPreference mEnable;
     private boolean mTriggerPermissionCheck;
     private ListPreference mUpdateInterval;
-    private CustomLocationPreference mLocation;
     private ListPreference mWeatherIconPack;
     private Preference mUpdateStatus;
     private Handler mHandler = new Handler();
     protected boolean mShowIconPack = true;
     private EditTextPreference mOwmKey;
     private OmniJawsClient mWeatherClient;
-
-    private static final String PREF_KEY_CUSTOM_LOCATION_CITY = "weather_custom_location_city";
-    private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 0;
+    private Preference mCustomLocationActivity;
+    private static final String PREF_KEY_CUSTOM_LOCATION = "weather_custom_location";
     private static final String WEATHER_ICON_PACK = "weather_icon_pack";
     private static final String PREF_KEY_UPDATE_STATUS = "update_status";
+
+    ActivityResultLauncher<Intent> mCustomLocationLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == Activity.RESULT_OK) {
+                    Intent intent = result.getData();
+                    if (intent.hasExtra(DATA_LOCATION_NAME)) {
+                        String locationName = intent.getStringExtra(DATA_LOCATION_NAME);
+                        double lat = intent.getDoubleExtra(DATA_LOCATION_LAT, 0f);
+                        double lon = intent.getDoubleExtra(DATA_LOCATION_LON, 0f);
+                        String locationId = String.format(Locale.US, PART_COORDINATES, lat, lon);
+                        Config.setLocationId(getContext(), locationId);
+                        Config.setLocationName(getContext(), locationName);
+                        forceRefreshWeatherSettings();
+                    }
+                }
+            });
+
+    ActivityResultLauncher<String[]> requestPermissionLauncher =
+            registerForActivityResult(new ActivityResultContracts
+                            .RequestMultiplePermissions(), result -> {
+                        Boolean fineLocationGranted = result.getOrDefault(
+                                Manifest.permission.ACCESS_FINE_LOCATION, false);
+                        Boolean coarseLocationGranted = result.getOrDefault(
+                                Manifest.permission.ACCESS_COARSE_LOCATION, false);
+                        if ((fineLocationGranted != null && fineLocationGranted) ||
+                                (coarseLocationGranted != null && coarseLocationGranted)) {
+                            forceRefreshWeatherSettings();
+                        }
+                    }
+            );
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
@@ -116,12 +155,10 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnPref
         mUpdateInterval.setValueIndex(idx);
         mUpdateInterval.setSummary(mUpdateInterval.getEntries()[idx]);
 
-        mLocation = (CustomLocationPreference) findPreference(PREF_KEY_CUSTOM_LOCATION_CITY);
         if (mPrefs.getBoolean(Config.PREF_KEY_ENABLE, false)
                 && !mPrefs.getBoolean(Config.PREF_KEY_CUSTOM_LOCATION, false)) {
             checkLocationEnabled();
         }
-        initCustomLocationPreference();
 
         mWeatherIconPack = (ListPreference) findPreference(WEATHER_ICON_PACK);
 
@@ -153,6 +190,9 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnPref
         mOwmKey.setSummary(TextUtils.isEmpty(customKey) ?
                 getResources().getString(R.string.service_disabled) : customKey);
         mOwmKey.setOnPreferenceChangeListener(this);
+
+        mCustomLocationActivity = findPreference(PREF_KEY_CUSTOM_LOCATION);
+        mCustomLocationActivity.setSummary(Config.getLocationName(getContext()));
     }
 
     @Override
@@ -186,6 +226,9 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnPref
         } else if (preference == mUpdateStatus) {
             forceRefreshWeatherSettings();
             return true;
+        } else if (preference == mCustomLocationActivity) {
+            mCustomLocationLauncher.launch(new Intent(getContext(), LocationBrowseActivity.class));
+            return true;
         }
         return false;
     }
@@ -197,12 +240,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnPref
             int idx = mProvider.findIndexOfValue(value);
             mProvider.setSummary(mProvider.getEntries()[idx]);
             mProvider.setValueIndex(idx);
-            if (mCustomLocation.isChecked() && Config.getLocationName(getContext()) != null) {
-                // city ids are provider specific - so we need to recheck
-                new WeatherLocationTask(getContext(), Config.getLocationName(getContext()), this).execute();
-            } else {
-                forceRefreshWeatherSettings();
-            }
+            forceRefreshWeatherSettings();
             return true;
         } else if (preference == mUnits) {
             String value = (String) newValue;
@@ -275,8 +313,10 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnPref
         if (getContext().checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED || getContext().checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
-                    PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+            requestPermissionLauncher.launch(new String[]{
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+            });
         } else {
             if (force) {
                 forceRefreshWeatherSettings();
@@ -306,20 +346,6 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnPref
         }
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
-        switch (requestCode) {
-            case PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    forceRefreshWeatherSettings();
-                }
-                break;
-            }
-        }
-    }
-
     private void disableService() {
         // stop any pending
         WeatherUpdateService.cancelAllUpdate(getContext());
@@ -328,25 +354,6 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnPref
 
     private void enableService() {
         WeatherUpdateService.scheduleUpdatePeriodic(getContext());
-    }
-
-    @Override
-    public void applyLocation(WeatherInfo.WeatherLocation result) {
-        Config.setLocationId(getContext(), result.id);
-        Config.setLocationName(getContext(), result.city);
-        mLocation.setText(result.city);
-        mLocation.setSummary(result.city);
-        forceRefreshWeatherSettings();
-    }
-
-    private void initCustomLocationPreference() {
-        String city = Config.getLocationName(getContext());
-        if (!TextUtils.isEmpty(city)) {
-            mLocation.setText(city);
-            mLocation.setSummary(city);
-        } else {
-            mLocation.setSummary(R.string.weather_custom_location_missing);
-        }
     }
 
     private void getAvailableWeatherIconPacks(List<String> entries, List<String> values) {
@@ -429,19 +436,5 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnPref
 
     private void forceRefreshWeatherSettings() {
         WeatherUpdateService.scheduleUpdateNow(getContext());
-    }
-
-    @Override
-    public void onDisplayPreferenceDialog(Preference preference) {
-        CustomLocationPreference.CustomLocationPreferenceDialogFragment f = null;
-        if (preference instanceof CustomLocationPreference) {
-            f = CustomLocationPreference.CustomLocationPreferenceDialogFragment
-                    .newInstance(preference.getKey());
-        } else {
-            super.onDisplayPreferenceDialog(preference);
-            return;
-        }
-        f.setTargetFragment(this, 0);
-        f.show(getFragmentManager(), "dialog_preference");
     }
 }

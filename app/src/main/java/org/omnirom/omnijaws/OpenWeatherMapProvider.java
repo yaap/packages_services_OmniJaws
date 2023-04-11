@@ -37,8 +37,6 @@ public class OpenWeatherMapProvider extends AbstractWeatherProvider {
     private static final String TAG = "OpenWeatherMapProvider";
 
     private static final int FORECAST_DAYS = 5;
-    private static final String PART_COORDINATES =
-            "lat=%f&lon=%f";
     private static final String URL_WEATHER =
             "https://api.openweathermap.org/data/2.5/onecall?%s&mode=json&units=%s&lang=%s&cnt=" + FORECAST_DAYS + "&appid=%s";
 
@@ -92,7 +90,7 @@ public class OpenWeatherMapProvider extends AbstractWeatherProvider {
             WeatherInfo w = new WeatherInfo(mContext, selection, city,
                     /* condition */ weather.getString("main"),
                     /* conditionCode */ mapConditionIconToCode(
-                            weather.getString("icon"), weather.getInt("id")),
+                    weather.getString("icon"), weather.getInt("id")),
                     /* temperature */ sanitizeTemperature(conditionData.getDouble("temp"), metric),
                     /* humidity */ (float) conditionData.getDouble("humidity"),
                     /* wind */ windSpeed,
@@ -130,7 +128,7 @@ public class OpenWeatherMapProvider extends AbstractWeatherProvider {
                         /* high */ sanitizeTemperature(conditionData.getDouble("max"), metric),
                         /* condition */ data.getString("main"),
                         /* conditionCode */ mapConditionIconToCode(
-                                data.getString("icon"), data.getInt("id")),
+                        data.getString("icon"), data.getInt("id")),
                         day,
                         metric);
             } catch (JSONException e) {
@@ -179,6 +177,7 @@ public class OpenWeatherMapProvider extends AbstractWeatherProvider {
     }
 
     private static final HashMap<String, String> LANGUAGE_CODE_MAPPING = new HashMap<String, String>();
+
     static {
         LANGUAGE_CODE_MAPPING.put("bg-", "bg");
         LANGUAGE_CODE_MAPPING.put("de-", "de");
@@ -197,6 +196,7 @@ public class OpenWeatherMapProvider extends AbstractWeatherProvider {
         LANGUAGE_CODE_MAPPING.put("zh-CN", "zh_cn");
         LANGUAGE_CODE_MAPPING.put("zh-TW", "zh_tw");
     }
+
     private String getLanguageCode() {
         Locale locale = mContext.getResources().getConfiguration().locale;
         String selector = locale.getLanguage() + "-" + locale.getCountry();
@@ -258,11 +258,21 @@ public class OpenWeatherMapProvider extends AbstractWeatherProvider {
                 return 10;
 
             // Snow
-            case 600: case 620: return 14; // light snow
-            case 601: case 621: return 16; // snow
-            case 602: case 622: return 41; // heavy snow
-            case 611: case 612: return 18; // sleet
-            case 615: case 616: return 5;  // rain and snow
+            case 600:
+            case 620:
+                return 14; // light snow
+            case 601:
+            case 621:
+                return 16; // snow
+            case 602:
+            case 622:
+                return 41; // heavy snow
+            case 611:
+            case 612:
+                return 18; // sleet
+            case 615:
+            case 616:
+                return 5;  // rain and snow
 
             // Atmosphere
             case 741:    // fog
@@ -294,13 +304,20 @@ public class OpenWeatherMapProvider extends AbstractWeatherProvider {
                 return 30;
 
             // Extreme
-            case 900: return 0;  // tornado
-            case 901: return 1;  // tropical storm
-            case 902: return 2;  // hurricane
-            case 903: return 25; // cold
-            case 904: return 36; // hot
-            case 905: return 24; // windy
-            case 906: return 17; // hail
+            case 900:
+                return 0;  // tornado
+            case 901:
+                return 1;  // tropical storm
+            case 902:
+                return 2;  // hurricane
+            case 903:
+                return 25; // cold
+            case 904:
+                return 36; // hot
+            case 905:
+                return 24; // windy
+            case 906:
+                return 17; // hail
         }
 
         return -1;

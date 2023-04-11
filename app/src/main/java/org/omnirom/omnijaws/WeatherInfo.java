@@ -23,6 +23,8 @@ import java.util.Date;
 import android.content.Context;
 import android.content.res.Resources;
 
+import androidx.annotation.Nullable;
+
 public class WeatherInfo {
     private static final DecimalFormat sNoDigitsFormat = new DecimalFormat("0");
 
@@ -42,10 +44,10 @@ public class WeatherInfo {
     private boolean metric;
 
     private WeatherInfo(Context context, String id,
-            String city, String condition, int conditionCode, float temp,
-            float humidity, float wind, int windDir,
-            boolean metric, ArrayList<DayForecast> forecasts, long timestamp,
-            String pinWheel) {
+                        String city, String condition, int conditionCode, float temp,
+                        float humidity, float wind, int windDir,
+                        boolean metric, ArrayList<DayForecast> forecasts, long timestamp,
+                        String pinWheel) {
         this.mContext = context.getApplicationContext();
         this.id = id;
         this.city = city;
@@ -62,20 +64,12 @@ public class WeatherInfo {
     }
 
     public WeatherInfo(Context context, String id,
-            String city, String condition, int conditionCode, float temp,
-            float humidity, float wind, int windDir,
-            boolean metric, ArrayList<DayForecast> forecasts, long timestamp) {
+                       String city, String condition, int conditionCode, float temp,
+                       float humidity, float wind, int windDir,
+                       boolean metric, ArrayList<DayForecast> forecasts, long timestamp) {
         this(context, id, city, condition, conditionCode, temp, humidity, wind, windDir,
                 metric, forecasts, timestamp, "");
         this.pinWheel = getFormattedWindDirection(windDir);
-    }
-
-    public static class WeatherLocation {
-        public String id;
-        public String city;
-        public String postal;
-        public String countryId;
-        public String country;
     }
 
     public static class DayForecast {
@@ -189,7 +183,7 @@ public class WeatherInfo {
         if (wind < 0) {
             return "0";
         }
-        return getFormattedValue(wind, metric?"km/h":"m/h");
+        return getFormattedValue(wind, metric ? "km/h" : "m/h");
     }
 
     public int getWindDirection() {
@@ -197,9 +191,9 @@ public class WeatherInfo {
     }
 
     private String getFormattedWindDirection(int direction) {
-      int value = (int) ((direction/22.5)+0.5);
-      String pw = WIND_DIRECTION[(value % 16)];
-      return pw;
+        int value = (int) ((direction / 22.5) + 0.5);
+        String pw = WIND_DIRECTION[(value % 16)];
+        return pw;
     }
 
     public String getPinWheel() {
@@ -326,7 +320,7 @@ public class WeatherInfo {
 
         // Parse the forecast data
         try {
-            for (int item = 0; item < forecastItems; item ++) {
+            for (int item = 0; item < forecastItems; item++) {
                 int offset = item * 5 + 1;
                 DayForecast day = new DayForecast(
                         /* low */ Float.parseFloat(forecastParts[offset + 1]),

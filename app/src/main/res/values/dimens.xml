@@ -16,6 +16,7 @@
     <dimen name="current_height">150dp</dimen>
     <dimen name="text_line_height">60dp</dimen>
     <dimen name="forecast_text_size">16sp</dimen>
+    <dimen name="forecast_text_size_small">14sp</dimen>
     <dimen name="header_text_size">28sp</dimen>
     <dimen name="action_icon_size">30dp</dimen>
     <dimen name="widget_wide_image_size">40dp</dimen>

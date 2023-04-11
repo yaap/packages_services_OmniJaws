@@ -44,13 +44,11 @@ public abstract class AbstractWeatherProvider {
     protected Context mContext;
     private static final SimpleDateFormat dayFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
     private static final String URL_PLACES =
-            "https://secure.geonames.org/searchJSON?q=%s&lang=%s&username=omnijaws&maxRows=20";
+            "https://secure.geonames.org/searchJSON?name_startsWith=%s&lang=%s&username=omnijaws&maxRows=20";
     private static final String URL_LOCALITY =
             "https://secure.geonames.org/extendedFindNearbyJSON?lat=%f&lng=%f&lang=%s&username=omnijaws";
-    private static final String PART_COORDINATES =
+    protected static final String PART_COORDINATES =
             "lat=%f&lon=%f";
-    private static HashSet<String> FCODE_SET = Stream.of("PCLI", "PPLA", "PPLA2", "ADM3", "ADM2", "ADM1")
-            .collect(Collectors.toCollection(HashSet::new));
 
     public AbstractWeatherProvider(Context context) {
         mContext = context;
@@ -117,7 +115,6 @@ public abstract class AbstractWeatherProvider {
                 }
             } else if (jsonResults.has("geonames")) {
                 JSONArray jsonResultsArray = jsonResults.getJSONArray("geonames");
-                ArrayList<WeatherInfo.WeatherLocation> results = new ArrayList<>(jsonResultsArray.length());
                 int count = jsonResultsArray.length();
 
                 for (int i = count - 1; i >= 0; i--) {
@@ -167,45 +164,5 @@ public abstract class AbstractWeatherProvider {
             calendar.add(Calendar.DATE, i);
         }
         return dayFormat.format(calendar.getTime());
-    }
-
-    protected List<WeatherInfo.WeatherLocation> getLocations(String input) {
-        String lang = Locale.getDefault().getLanguage().replaceFirst("_", "-");
-        String url = String.format(URL_PLACES, Uri.encode(input), lang);
-        String response = retrieve(url);
-        if (response == null) {
-            return null;
-        }
-        log(TAG, "URL = " + url + " returning a response of " + response);
-
-        try {
-            JSONArray jsonResults = new JSONObject(response).getJSONArray("geonames");
-            ArrayList<WeatherInfo.WeatherLocation> results = new ArrayList<>(jsonResults.length());
-            int count = jsonResults.length();
-
-            for (int i = 0; i < count; i++) {
-                JSONObject result = jsonResults.getJSONObject(i);
-                String fcode = result.getString("fcode");
-                String city = result.getString("name");
-                if (FCODE_SET.contains(fcode) && city.toUpperCase().contains(input.toUpperCase())) {
-                    WeatherInfo.WeatherLocation location = new WeatherInfo.WeatherLocation();
-                    String area = result.getString("adminName1");
-                    location.id = String.format(Locale.US, PART_COORDINATES, result.getDouble("lat"), result.getDouble("lng"));
-                    location.city = city;
-                    if (!TextUtils.isEmpty(area)) {
-                        location.countryId = city.equals(area) ? result.getString("countryName") : result.getString("countryName") + ", " + area;
-                    } else {
-                        location.countryId = result.getString("countryName");
-                    }
-                    results.add(location);
-                }
-            }
-
-            return results;
-        } catch (Exception e) {
-            Log.w(TAG, "Received malformed location data (input=" + input + ")", e);
-        }
-
-        return null;
     }
 }
