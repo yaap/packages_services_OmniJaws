@@ -201,7 +201,7 @@ public class DetailedWeatherView extends FrameLayout {
                 weatherData.tempUnits));
         d = mWeatherClient.getWeatherConditionImage(weatherData.conditionCode);
         mCurrentImage.setImageDrawable(d);
-        mCurrentText.setText(weatherData.temp + " " + weatherData.tempUnits);
+        mCurrentText.setText(weatherData.temp + weatherData.tempUnits);
     }
 
     private String getWeatherDataString(String min, String max, String tempUnits) {
