@@ -65,4 +65,11 @@
     <string name="omnijaws_service_last_update">Poslední aktualizace:</string>
     <string name="omnijaws_service_error_location">Poloha není k dispozici</string>
     <string name="omnijaws_service_error_network">Nebyla nalezena žádná síť</string>
+    <string name="weather_widget_desc">"Aktuální počasí a 4denní předpověď"</string>
+    <string name="theme_system">Podle systému</string>
+    <string name="theme_dark">Tmavý</string>
+    <string name="theme_light">Světlý</string>
+    <string name="color_theme_title">Motiv</string>
+    <string name="location_browse_activity_title">Vyberte polohu</string>
+    <string name="location_query_hint">Vyhledávání polohy</string>
 </resources>

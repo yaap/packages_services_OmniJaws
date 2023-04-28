@@ -45,8 +45,11 @@
     <string name="service_disabled">Desabilitar</string>
     <string name="service_error">Erro</string>
     <string name="last_update_time">Última atualização</string>
+    <string name="omnijaws_service_waiting">Esperando \u2026</string>
     <string name="omnijaws_service_unkown">Sem dados meteorológicos</string>
     <string name="omnijaws_service_error">Erro ao carregar dados meteorológicos</string>
+    <string name="omnijaws_service_init">Esperando \u2026</string>
+    <string name="omnijaws_service_progress">Aplicando\u2026</string>
     <string name="omnijaws_service_disabled">Serviço desativado</string>
     <string name="weather_widget">Tempo</string>
     <string name="omnijaws_current_text">Agora</string>
@@ -55,4 +58,18 @@
     <string name="with_forecast_title">Com previsão de 4 dias e detalhes</string>
     <string name="owm_key">Chave OWM personalizada</string>
     <string name="omnijaws_city_unkown">Desconhecido</string>
+    <string name="activity_title">Clima</string>
+    <string name="omnijaws_service_error_long">Erro ao carregar dados meteorológicos</string>
+    <string name="omnijaws_detail_header">Clima</string>
+    <string name="omnijaws_label_default">Clima</string>
+    <string name="omnijaws_service_last_update">Última atualização:</string>
+    <string name="omnijaws_service_error_location">Nenhuma informação disponível</string>
+    <string name="omnijaws_service_error_network">Nenhuma rede encontrada</string>
+    <string name="weather_widget_desc">"Previsão do tempo real e de 4 dias"</string>
+    <string name="theme_system">Seguir sistema</string>
+    <string name="theme_dark">Escuro</string>
+    <string name="theme_light">Claro</string>
+    <string name="color_theme_title">Tema</string>
+    <string name="location_browse_activity_title">Selecionar local</string>
+    <string name="location_query_hint">Pesquisar por localização</string>
 </resources>
