@@ -298,14 +298,14 @@ public class OpenWeatherMapProvider extends AbstractWeatherProvider {
 
             // clouds
             case 800:     // clear sky
-                return 32;
+                return icon.endsWith("n") ? 31 : 32; // day or night
             case 801:     // few clouds
-                return 34;
+                return icon.endsWith("n") ? 33 : 34; // day or night
             case 802:     // scattered clouds
                 return 28;
             case 803:     // broken clouds
             case 804:     // overcast clouds
-                return 30;
+                return icon.endsWith("n") ? 29 : 30; // day or night
 
             // Extreme
             case 900:
