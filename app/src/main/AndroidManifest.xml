@@ -129,7 +129,7 @@
         <activity
             android:name=".widget.WeatherAppWidgetConfigureActivity"
             android:exported="true"
-            android:theme="@style/Theme.SubSettingsBase">
+            android:theme="@style/Theme.Settings">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
             </intent-filter>
