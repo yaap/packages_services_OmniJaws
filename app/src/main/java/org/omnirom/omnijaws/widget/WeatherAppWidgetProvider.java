@@ -280,7 +280,7 @@ public class WeatherAppWidgetProvider extends AppWidgetProvider {
 
         switch (theme) {
             case 1:
-                if (weatherClient.isDefaultIconPackage()) {
+                if (weatherClient.isOutlineIconPackage()) {
                     smallWidgetResId = R.layout.weather_appwidget_small_tint_system;
                     largelWidgetResId = R.layout.weather_appwidget_large_tint_system;
                     wideWidgetResId = R.layout.weather_appwidget_wide_tint_system;
@@ -291,7 +291,7 @@ public class WeatherAppWidgetProvider extends AppWidgetProvider {
                 }
                 break;
             case 2:
-                if (weatherClient.isDefaultIconPackage()) {
+                if (weatherClient.isOutlineIconPackage()) {
                     smallWidgetResId = R.layout.weather_appwidget_small_tint_dark;
                     largelWidgetResId = R.layout.weather_appwidget_large_tint_dark;
                     wideWidgetResId = R.layout.weather_appwidget_wide_tint_dark;
@@ -302,7 +302,7 @@ public class WeatherAppWidgetProvider extends AppWidgetProvider {
                 }
                 break;
             case 3:
-                if (weatherClient.isDefaultIconPackage()) {
+                if (weatherClient.isOutlineIconPackage()) {
                     smallWidgetResId = R.layout.weather_appwidget_small_tint_light;
                     largelWidgetResId = R.layout.weather_appwidget_large_tint_light;
                     wideWidgetResId = R.layout.weather_appwidget_wide_tint_light;
