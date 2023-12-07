@@ -117,8 +117,7 @@
                             android:id="@+id/current_wind_image"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_gravity="center_vertical"
-                            android:tint="?android:attr/textColorPrimary" />
+                            android:layout_gravity="center_vertical" />
 
                         <TextView
                             android:id="@+id/current_wind"
@@ -133,8 +132,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
-                            android:layout_marginStart="4dp"
-                            android:tint="?android:attr/textColorPrimary" />
+                            android:layout_marginStart="4dp" />
 
                         <TextView
                             android:id="@+id/current_wind_direction"
@@ -149,8 +147,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
-                            android:layout_marginStart="4dp"
-                            android:tint="?android:attr/textColorPrimary" />
+                            android:layout_marginStart="4dp" />
 
                         <TextView
                             android:id="@+id/current_humidity"
@@ -179,7 +176,7 @@
                 android:layout_height="0dp"
                 android:layout_weight="1" />
 
-            <include layout="@layout/weather_widget_forecast_tint" />
+            <include layout="@layout/weather_widget_forecast" />
 
             <LinearLayout
                 android:layout_width="match_parent"
