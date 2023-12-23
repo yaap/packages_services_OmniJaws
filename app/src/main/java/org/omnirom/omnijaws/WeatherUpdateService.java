@@ -18,6 +18,7 @@
 package org.omnirom.omnijaws;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.job.JobInfo;
 import android.app.job.JobParameters;
 import android.app.job.JobScheduler;
@@ -31,6 +32,7 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.os.Handler;
 import android.os.HandlerThread;
+import android.os.Looper;
 import android.os.PowerManager;
 import android.provider.Settings;
 import android.text.TextUtils;
@@ -42,6 +44,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 public class WeatherUpdateService extends JobService {
     private static final String TAG = "WeatherUpdateService";
@@ -56,12 +59,12 @@ public class WeatherUpdateService extends JobService {
 
     private static final float LOCATION_ACCURACY_THRESHOLD_METERS = 50000;
     private static final long OUTDATED_LOCATION_THRESHOLD_MILLIS = 10L * 60L * 1000L; // 10 minutes
+    private static final long WAKELOCK_TIMEOUT_MILLIS = 5L * 60L * 1000L; // 5 minutes
     private static final int RETRY_DELAY_MS = 5000;
     private static final int RETRY_MAX_NUM = 5;
 
     public static final int PERIODIC_UPDATE_JOB_ID = 0;
     public static final int ONCE_UPDATE_JOB_ID = 1;
-    public static final int DELAYED_LOCATION_UPDATE_JOB_ID = 2;
 
     private HandlerThread mHandlerThread;
     private Handler mHandler;
@@ -104,7 +107,7 @@ public class WeatherUpdateService extends JobService {
     private void updateWeatherFromAlarm(JobParameters params) {
         Config.setUpdateError(this, false);
 
-        mWakeLock.acquire();
+        mWakeLock.acquire(WAKELOCK_TIMEOUT_MILLIS);
         try {
             if (!Config.isEnabled(this)) {
                 Log.w(TAG, "Service started, but not enabled ... stopping");
@@ -114,17 +117,6 @@ public class WeatherUpdateService extends JobService {
                 return;
             }
 
-            // scheduled from location listener
-            if (params.getJobId() == DELAYED_LOCATION_UPDATE_JOB_ID) {
-                // still no location? - screw it
-                if (!isNeededLocationAvailable()) {
-                    WeatherLocationListener.cancel(this);
-                    Intent errorIntent = new Intent(ACTION_ERROR);
-                    errorIntent.putExtra(EXTRA_ERROR, EXTRA_ERROR_LOCATION);
-                    sendBroadcast(errorIntent);
-                    Config.setUpdateError(this, true);
-                }
-            }
             Config.clearLastUpdateTime(this);
 
             Log.d(TAG, "updateWeather");
@@ -139,6 +131,7 @@ public class WeatherUpdateService extends JobService {
         return Settings.Secure.getInt(getContentResolver(), Settings.Secure.LOCATION_MODE, -1) != Settings.Secure.LOCATION_MODE_OFF;
     }
 
+    @SuppressLint("MissingPermission")
     private Location getCurrentLocation() {
         LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         if (!doCheckLocationEnabled()) {
@@ -166,12 +159,26 @@ public class WeatherUpdateService extends JobService {
             }
         }
         if (needsUpdate) {
-            if (DEBUG) Log.d(TAG, "Getting best location provider");
             String locationProvider = lm.getBestProvider(sLocationCriteria, true);
             if (TextUtils.isEmpty(locationProvider)) {
                 Log.e(TAG, "No available location providers matching criteria.");
             } else {
-                WeatherLocationListener.registerIfNeeded(this, locationProvider);
+                if (DEBUG) Log.d(TAG, "Getting current location with provider " + locationProvider);
+                lm.getCurrentLocation(locationProvider, null, getApplication().getMainExecutor(), new Consumer<Location>() {
+                    @Override
+                    public void accept(Location location) {
+                        if (location != null) {
+                            if (DEBUG) Log.d(TAG, "Got valid location now update");
+                            WeatherUpdateService.scheduleUpdateNow(WeatherUpdateService.this);
+                        } else {
+                            Log.w(TAG, "Failed to retrieve location");
+                            Intent errorIntent = new Intent(ACTION_ERROR);
+                            errorIntent.putExtra(EXTRA_ERROR, EXTRA_ERROR_LOCATION);
+                            sendBroadcast(errorIntent);
+                            Config.setUpdateError(WeatherUpdateService.this, true);
+                        }
+                    }
+                });
             }
         }
 
@@ -222,18 +229,14 @@ public class WeatherUpdateService extends JobService {
         jobScheduler.schedule(job);
     }
 
-    private static void cancelUpdate(Context context, int jobId) {
+    private static void cancelUpdate(Context context) {
         if (DEBUG) Log.d(TAG, "cancelUpdate");
         JobScheduler jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
-        jobScheduler.cancel(jobId);
-    }
-
-    public static void cancelDelayedLocationUpdate(Context context) {
-        cancelUpdate(context, DELAYED_LOCATION_UPDATE_JOB_ID);
+        jobScheduler.cancel(PERIODIC_UPDATE_JOB_ID);
     }
 
     public static void cancelUpdatePeriodic(Context context) {
-        cancelUpdate(context, PERIODIC_UPDATE_JOB_ID);
+        cancelUpdate(context);
     }
 
     public static void cancelAllUpdate(Context context) {
@@ -247,7 +250,7 @@ public class WeatherUpdateService extends JobService {
             public void run() {
                 WeatherInfo w = null;
                 try {
-                    mWakeLock.acquire();
+                    mWakeLock.acquire(WAKELOCK_TIMEOUT_MILLIS);
                     AbstractWeatherProvider provider = Config.getProvider(WeatherUpdateService.this);
                     int i = 0;
                     // retry max 3 times
@@ -258,7 +261,7 @@ public class WeatherUpdateService extends JobService {
                                 if (location != null) {
                                     w = provider.getLocationWeather(location, Config.isMetric(WeatherUpdateService.this));
                                 } else {
-                                    Log.w(TAG, "no location");
+                                    Log.w(TAG, "no location yet");
                                     // we are outa here
                                     break;
                                 }
@@ -311,18 +314,5 @@ public class WeatherUpdateService extends JobService {
     private boolean checkPermissions() {
         return checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
                 checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED;
-    }
-
-    private boolean isNeededLocationAvailable() {
-        if (!Config.isCustomLocation(WeatherUpdateService.this)) {
-            if (checkPermissions()) {
-                Location location = getCurrentLocation();
-                if (location == null) {
-                    Log.w(TAG, "no location");
-                    return false;
-                }
-            }
-        }
-        return true;
     }
 }
