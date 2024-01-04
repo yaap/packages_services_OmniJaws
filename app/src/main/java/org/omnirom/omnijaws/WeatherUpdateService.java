@@ -32,8 +32,6 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.os.Handler;
 import android.os.HandlerThread;
-import android.os.Looper;
-import android.os.PowerManager;
 import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Log;
@@ -46,6 +44,7 @@ import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
+// we dont need an explicit wakelock JobScheduler takes care of that
 public class WeatherUpdateService extends JobService {
     private static final String TAG = "WeatherUpdateService";
     private static final boolean DEBUG = false;
@@ -59,7 +58,6 @@ public class WeatherUpdateService extends JobService {
 
     private static final float LOCATION_ACCURACY_THRESHOLD_METERS = 50000;
     private static final long OUTDATED_LOCATION_THRESHOLD_MILLIS = 10L * 60L * 1000L; // 10 minutes
-    private static final long WAKELOCK_TIMEOUT_MILLIS = 5L * 60L * 1000L; // 5 minutes
     private static final int RETRY_DELAY_MS = 5000;
     private static final int RETRY_MAX_NUM = 5;
 
@@ -68,7 +66,6 @@ public class WeatherUpdateService extends JobService {
 
     private HandlerThread mHandlerThread;
     private Handler mHandler;
-    private PowerManager.WakeLock mWakeLock;
     private static final SimpleDateFormat dayFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.US);
 
     private static final Criteria sLocationCriteria;
@@ -99,15 +96,11 @@ public class WeatherUpdateService extends JobService {
         mHandlerThread = new HandlerThread("WeatherService Thread");
         mHandlerThread.start();
         mHandler = new Handler(mHandlerThread.getLooper());
-        PowerManager pm = (PowerManager) getSystemService(POWER_SERVICE);
-        mWakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, TAG + ":update");
-        mWakeLock.setReferenceCounted(true);
     }
 
     private void updateWeatherFromAlarm(JobParameters params) {
         Config.setUpdateError(this, false);
 
-        mWakeLock.acquire(WAKELOCK_TIMEOUT_MILLIS);
         try {
             if (!Config.isEnabled(this)) {
                 Log.w(TAG, "Service started, but not enabled ... stopping");
@@ -122,7 +115,6 @@ public class WeatherUpdateService extends JobService {
             Log.d(TAG, "updateWeather");
             updateWeather();
         } finally {
-            mWakeLock.release();
             jobFinished(params, false);
         }
     }
@@ -250,7 +242,6 @@ public class WeatherUpdateService extends JobService {
             public void run() {
                 WeatherInfo w = null;
                 try {
-                    mWakeLock.acquire(WAKELOCK_TIMEOUT_MILLIS);
                     AbstractWeatherProvider provider = Config.getProvider(WeatherUpdateService.this);
                     int i = 0;
                     // retry max 3 times
@@ -305,7 +296,6 @@ public class WeatherUpdateService extends JobService {
                     // send broadcast that something has changed
                     Intent updateIntent = new Intent(ACTION_BROADCAST);
                     sendBroadcast(updateIntent);
-                    mWakeLock.release();
                 }
             }
         });
