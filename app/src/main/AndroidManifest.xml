@@ -121,6 +121,36 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+        
+        <activity 
+            android:label="Stickers" 
+            android:name="org.omnirom.omnijaws.stickers" 
+            android:exported="false">
+            <intent-filter>
+                <action android:name="org.omnirom.WeatherIconPack"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
+        
+        <activity 
+            android:label="Marshmallow"
+            android:name="org.omnirom.omnijaws.marshmallow"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="org.omnirom.WeatherIconPack"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
+        
+        <activity 
+            android:label="Color Hand"
+            android:name="org.omnirom.omnijaws.icons8_color_hand"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="org.omnirom.WeatherIconPack"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
 
         <receiver
             android:name=".widget.WeatherAppWidgetProvider"
