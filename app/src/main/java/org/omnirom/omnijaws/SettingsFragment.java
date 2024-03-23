@@ -29,11 +29,11 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
 import android.text.TextUtils;
-import android.widget.Switch;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 
 import com.android.internal.util.crdroid.OmniJawsClient;
 import com.android.settingslib.widget.MainSwitchPreference;
-import com.android.settingslib.widget.OnMainSwitchChangeListener;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -61,7 +61,7 @@ import static org.omnirom.omnijaws.LocationBrowseActivity.DATA_LOCATION_LON;
 import static org.omnirom.omnijaws.LocationBrowseActivity.DATA_LOCATION_NAME;
 
 public class SettingsFragment extends PreferenceFragmentCompat implements OnPreferenceChangeListener,
-        OmniJawsClient.OmniJawsObserver, OnMainSwitchChangeListener {
+        OmniJawsClient.OmniJawsObserver, OnCheckedChangeListener {
 
     private static final String CHRONUS_ICON_PACK_INTENT = "com.dvtonder.chronus.ICON_PACK";
     private static final String DEFAULT_WEATHER_ICON_PACKAGE = "org.omnirom.omnijaws.google";
@@ -278,7 +278,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnPref
     }
 
     @Override
-    public void onSwitchChanged(Switch switchView, boolean isChecked) {
+    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
         mEnable.setChecked(isChecked);
         Config.setEnabled(getContext(), isChecked);
         if (isChecked) {
