@@ -61,7 +61,7 @@
         android:entryValues="@array/units_values"
         android:dependency="enable" />
 
-    <SwitchPreference
+    <SwitchPreferenceCompat
         android:key="custom_location"
         android:title="@string/custom_location_title"
         android:defaultValue="false"
