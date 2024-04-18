@@ -30,7 +30,6 @@ import org.omnirom.omnijaws.WeatherInfo.DayForecast;
 import android.content.Context;
 import android.content.res.Resources;
 import android.location.Location;
-import android.os.SystemProperties;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -44,12 +43,9 @@ public class OpenWeatherMapProvider extends AbstractWeatherProvider {
     private List<String> mKeys = new ArrayList<String>();
     private boolean mHasAPIKey;
     private int mRequestNumber;
-    private static final String DEVICE = "ro.yaap.device";
 
     public OpenWeatherMapProvider(Context context) {
         super(context);
-        String device = SystemProperties.get(DEVICE);
-        if (device == null || device.isEmpty()) return;
         loadKeys();
         mHasAPIKey = getAPIKey() != null;
     }
