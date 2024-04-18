@@ -32,7 +32,7 @@ import android.text.TextUtils;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 
-import com.android.internal.util.crdroid.OmniJawsClient;
+import com.android.internal.util.yaap.OmniJawsClient;
 import com.android.settingslib.widget.MainSwitchPreference;
 
 import org.json.JSONException;

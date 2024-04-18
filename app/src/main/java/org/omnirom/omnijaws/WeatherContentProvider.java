@@ -15,7 +15,7 @@
  */
 package org.omnirom.omnijaws;
 
-import com.android.internal.util.crdroid.OmniJawsClient;
+import com.android.internal.util.yaap.OmniJawsClient;
 
 import org.omnirom.omnijaws.WeatherInfo.DayForecast;
 
