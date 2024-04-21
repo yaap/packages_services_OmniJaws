@@ -36,9 +36,8 @@ import android.util.Log;
 public class OpenWeatherMapProvider extends AbstractWeatherProvider {
     private static final String TAG = "OpenWeatherMapProvider";
 
-    private static final int FORECAST_DAYS = 5;
     private static final String URL_WEATHER =
-            "https://api.openweathermap.org/data/2.5/onecall?%s&mode=json&units=%s&lang=%s&cnt=" + FORECAST_DAYS + "&appid=%s";
+            "https://api.openweathermap.org/data/3.0/onecall?%s&mode=json&units=%s&lang=%s&appid=%s";
 
     private List<String> mKeys = new ArrayList<String>();
     private boolean mHasAPIKey;
