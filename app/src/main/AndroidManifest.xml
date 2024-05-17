@@ -75,8 +75,11 @@
         <receiver
             android:name=".SystemReceiver"
             android:exported="true">
-            <intent-filter>
+            <intent-filter android:priority="0">
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+            <intent-filter android:priority="1">
+                <action android:name="org.omnirom.omnijaws.FORCE_UPDATE" />
             </intent-filter>
         </receiver>
 

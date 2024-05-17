@@ -98,6 +98,13 @@ public class WeatherUpdateService extends JobService {
         mHandler = new Handler(mHandlerThread.getLooper());
     }
 
+    @Override
+    public void onDestroy() {
+        if (DEBUG) Log.d(TAG, "onDestroy");
+        mHandler.removeCallbacksAndMessages(null);
+        mHandlerThread.quitSafely();
+    }
+
     private void updateWeatherFromAlarm(JobParameters params) {
         Config.setUpdateError(this, false);
 

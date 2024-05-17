@@ -24,17 +24,20 @@ import android.util.Log;
 
 public class SystemReceiver extends BroadcastReceiver {
     private static final String TAG = "WeatherService:SystemReceiver";
+    private static final String FORCE_UPDATE = "org.omnirom.omnijaws.FORCE_UPDATE";
     private static final boolean DEBUG = false;
 
     @Override
     public void onReceive(final Context context, Intent intent) {
+        if (!Config.isEnabled(context)) return;
         final String action = intent.getAction();
         if (Intent.ACTION_BOOT_COMPLETED.equals(action)) {
-            if (Config.isEnabled(context)) {
-                if (DEBUG) Log.d(TAG, "boot completed kick alarm");
-                WeatherUpdateService.scheduleUpdatePeriodic(context);
-                WeatherUpdateService.scheduleUpdateNow(context);
-            }
+            if (DEBUG) Log.d(TAG, "boot completed kick alarm");
+            WeatherUpdateService.scheduleUpdatePeriodic(context);
+            WeatherUpdateService.scheduleUpdateNow(context);
+        } else if (FORCE_UPDATE.equals(action)) {
+            if (DEBUG) Log.d(TAG, "force update action received");
+            WeatherUpdateService.scheduleUpdateNow(context);
         }
     }
 }
