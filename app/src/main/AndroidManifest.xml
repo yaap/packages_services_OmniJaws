@@ -235,6 +235,16 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".google_new_dark"
+            android:exported="false"
+            android:label="Google New Dark" >
+            <intent-filter>
+                <action android:name="org.omnirom.WeatherIconPack" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
         <receiver
             android:name=".widget.WeatherAppWidgetProvider"
             android:exported="true"
