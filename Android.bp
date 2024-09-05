@@ -4,10 +4,6 @@ android_app {
   platform_apis: true,
   system_ext_specific: true,
 
-  libs: [
-    "org.apache.http.legacy",
-  ],
-
   srcs: [
     "app/src/main/**/*.java",
   ],
@@ -31,6 +27,11 @@ android_app {
     "default_permissions_org.omnirom.omnijaws",
   ],
 
+  optional_uses_libs: [
+    "org.apache.http.legacy",
+    "androidx.window.extensions",
+    "androidx.window.sidecar"
+  ],
 }
 
 prebuilt_etc {
