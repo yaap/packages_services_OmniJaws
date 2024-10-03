@@ -23,13 +23,13 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 
+import org.omnirom.omnijaws.BaseActivity;
 import org.omnirom.omnijaws.R;
 import org.omnirom.omnijaws.SettingsFragment;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.WindowCompat;
 
-public class WeatherAppWidgetConfigureActivity extends AppCompatActivity {
+public class WeatherAppWidgetConfigureActivity extends BaseActivity {
 
     private int appWidgetId;
 
@@ -39,6 +39,8 @@ public class WeatherAppWidgetConfigureActivity extends AppCompatActivity {
 
         setContentView(R.layout.widget_configure_activity);
         setSupportActionBar(findViewById(R.id.toolbar));
+
+        setupInsets(findViewById(R.id.main_layout));
 
         setTitle(R.string.weather_widget);
 

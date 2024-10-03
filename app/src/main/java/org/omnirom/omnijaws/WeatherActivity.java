@@ -26,9 +26,7 @@ import com.android.internal.util.yaap.OmniJawsClient;
 
 import java.util.Calendar;
 
-import androidx.appcompat.app.AppCompatActivity;
-
-public class WeatherActivity extends AppCompatActivity implements OmniJawsClient.OmniJawsObserver {
+public class WeatherActivity extends BaseActivity implements OmniJawsClient.OmniJawsObserver {
     private static final String TAG = "WeatherActivity";
     private static final boolean DEBUG = false;
     private DetailedWeatherView mDetailedView;
@@ -44,6 +42,7 @@ public class WeatherActivity extends AppCompatActivity implements OmniJawsClient
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.content_weather);
+        setupInsets(findViewById(R.id.content_browse));
         mDetailedView = findViewById(R.id.weather_forecast);
         View settings = findViewById(R.id.settings);
         settings.setOnClickListener(v -> {
