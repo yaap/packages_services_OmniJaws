@@ -1,13 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ripple xmlns:android="http://schemas.android.com/apk/res/android"
-    android:color="?android:attr/colorControlHighlight">
-    <item>
-        <shape android:shape="rectangle">
-            <solid android:color="?android:attr/colorBackground" />
-            <corners android:radius="@android:dimen/system_app_widget_background_radius" />
-            <stroke
-                android:width=".8dp"
-                android:color="?attr/colorOutline" />
-        </shape>
-    </item>
-</ripple>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+       android:shape="rectangle">
+    <solid android:color="?android:attr/colorBackground" />
+    <corners android:radius="@android:dimen/system_app_widget_background_radius" />
+</shape>
