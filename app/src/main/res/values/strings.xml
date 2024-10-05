@@ -77,6 +77,10 @@
     <string name="theme_dark">Dark</string>
     <string name="theme_light">Light</string>
     <string name="color_theme_title">Theme</string>
+    <string name="bg_transparency_title">Transparency</string>
+    <string name="trans_semi">Semi-transparent</string>
+    <string name="trans_full">Transparent</string>
+    <string name="trans_solid">Solid</string>
     <string name="location_browse_activity_title">Select location</string>
     <string name="location_query_hint">Search for a location</string>
 </resources>

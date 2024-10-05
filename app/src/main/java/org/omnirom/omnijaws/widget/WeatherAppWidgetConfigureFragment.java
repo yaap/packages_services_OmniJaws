@@ -29,17 +29,25 @@ import androidx.preference.Preference.OnPreferenceChangeListener;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
 
-public class WeatherAppWidgetConfigureFragment extends PreferenceFragmentCompat implements OnPreferenceChangeListener {
+public class WeatherAppWidgetConfigureFragment extends PreferenceFragmentCompat
+        implements OnPreferenceChangeListener {
 
     public static final String KEY_COLOR_THEME = "color_theme";
-    public static final int COLOR_THEME_DEFAULT = 1;
     public static final int COLOR_THEME_LIGHT = 3;
     public static final int COLOR_THEME_DARK = 2;
     public static final int COLOR_THEME_SYSTEM = 1;
     public static final int COLOR_THEME_TRANSPARENT = 0;
+    public static final int COLOR_THEME_DEFAULT = COLOR_THEME_SYSTEM;
+
+    public static final String KEY_BG_TRANS = "bg_transparency";
+    public static final int BG_TRANS_SEMI = 1;
+    public static final int BG_TRANS_FULL = 2;
+    public static final int BG_TRANS_SOLID = 3;
+    public static final int BG_TRANS_DEFAULT = BG_TRANS_SEMI;
 
     private int mAppWidgetId;
     private ListPreference mColorTheme;
+    private ListPreference mBgTrans;
 
     public WeatherAppWidgetConfigureFragment(int appWidgetId) {
         super();
@@ -51,24 +59,39 @@ public class WeatherAppWidgetConfigureFragment extends PreferenceFragmentCompat 
         addPreferencesFromResource(R.xml.weather_appwidget_configure);
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-        int value = prefs.getInt(WeatherAppWidgetConfigureFragment.KEY_COLOR_THEME + "_" + mAppWidgetId, WeatherAppWidgetConfigureFragment.COLOR_THEME_DEFAULT);
-        mColorTheme = (ListPreference) findPreference(WeatherAppWidgetConfigureFragment.KEY_COLOR_THEME);
+        int value = prefs.getInt(KEY_COLOR_THEME + "_" + mAppWidgetId, COLOR_THEME_DEFAULT);
+        mColorTheme = (ListPreference) findPreference(KEY_COLOR_THEME);
         mColorTheme.setValue(String.valueOf(value));
         int idx = mColorTheme.findIndexOfValue(String.valueOf(value));
         mColorTheme.setSummary(mColorTheme.getEntries()[idx]);
         mColorTheme.setOnPreferenceChangeListener(this);
+
+        value = prefs.getInt(KEY_BG_TRANS + "_" + mAppWidgetId, BG_TRANS_DEFAULT);
+        mBgTrans = (ListPreference) findPreference(KEY_BG_TRANS);
+        mBgTrans.setValue(String.valueOf(value));
+        idx = mBgTrans.findIndexOfValue(String.valueOf(value));
+        mBgTrans.setSummary(mBgTrans.getEntries()[idx]);
+        mBgTrans.setOnPreferenceChangeListener(this);
     }
 
     public static void clearPrefs(Context context, int id) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        prefs.edit().remove(KEY_COLOR_THEME + "_" + id).commit();
+        prefs.edit()
+                .remove(KEY_COLOR_THEME + "_" + id)
+                .remove(KEY_BG_TRANS + "_" + id)
+                .apply();
     }
 
     public static void remapPrefs(Context context, int oldId, int newId) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        int oldValue = prefs.getInt(KEY_COLOR_THEME + "_" + oldId, COLOR_THEME_DEFAULT);
-        prefs.edit().putInt(KEY_COLOR_THEME + "_" + newId, oldValue).commit();
-        prefs.edit().remove(KEY_COLOR_THEME + "_" + oldId).commit();
+        int oldThemeValue = prefs.getInt(KEY_COLOR_THEME + "_" + oldId, COLOR_THEME_DEFAULT);
+        int oldBgValue = prefs.getInt(KEY_BG_TRANS + "_" + oldId, BG_TRANS_DEFAULT);
+        prefs.edit()
+                .putInt(KEY_COLOR_THEME + "_" + newId, oldThemeValue)
+                .remove(KEY_COLOR_THEME + "_" + oldId)
+                .putInt(KEY_BG_TRANS + "_" + newId, oldBgValue)
+                .remove(KEY_BG_TRANS + "_" + oldId)
+                .apply();
     }
 
     @Override
@@ -76,9 +99,16 @@ public class WeatherAppWidgetConfigureFragment extends PreferenceFragmentCompat 
         if (preference.equals(mColorTheme)) {
             String newTheme = (String) newValue;
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-            prefs.edit().putInt(WeatherAppWidgetConfigureFragment.KEY_COLOR_THEME + "_" + mAppWidgetId, Integer.valueOf(newTheme)).commit();
+            prefs.edit().putInt(KEY_COLOR_THEME + "_" + mAppWidgetId, Integer.valueOf(newTheme)).apply();
             int idx = mColorTheme.findIndexOfValue(newTheme);
             mColorTheme.setSummary(mColorTheme.getEntries()[idx]);
+            return true;
+        } else if (preference.equals(mBgTrans)) {
+            String newTheme = (String) newValue;
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+            prefs.edit().putInt(KEY_BG_TRANS + "_" + mAppWidgetId, Integer.valueOf(newTheme)).apply();
+            int idx = mBgTrans.findIndexOfValue(newTheme);
+            mBgTrans.setSummary(mBgTrans.getEntries()[idx]);
             return true;
         }
         return false;

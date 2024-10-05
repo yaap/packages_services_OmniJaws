@@ -17,6 +17,19 @@
  */
 package org.omnirom.omnijaws.widget;
 
+import static org.omnirom.omnijaws.widget.WeatherAppWidgetConfigureFragment.BG_TRANS_DEFAULT;
+import static org.omnirom.omnijaws.widget.WeatherAppWidgetConfigureFragment.BG_TRANS_FULL;
+import static org.omnirom.omnijaws.widget.WeatherAppWidgetConfigureFragment.BG_TRANS_SEMI;
+import static org.omnirom.omnijaws.widget.WeatherAppWidgetConfigureFragment.BG_TRANS_SOLID;
+import static org.omnirom.omnijaws.widget.WeatherAppWidgetConfigureFragment.COLOR_THEME_DARK;
+import static org.omnirom.omnijaws.widget.WeatherAppWidgetConfigureFragment.COLOR_THEME_DEFAULT;
+import static org.omnirom.omnijaws.widget.WeatherAppWidgetConfigureFragment.COLOR_THEME_SYSTEM;
+import static org.omnirom.omnijaws.widget.WeatherAppWidgetConfigureFragment.COLOR_THEME_LIGHT;
+import static org.omnirom.omnijaws.widget.WeatherAppWidgetConfigureFragment.KEY_BG_TRANS;
+import static org.omnirom.omnijaws.widget.WeatherAppWidgetConfigureFragment.KEY_COLOR_THEME;
+import static org.omnirom.omnijaws.widget.WeatherAppWidgetConfigureFragment.clearPrefs;
+import static org.omnirom.omnijaws.widget.WeatherAppWidgetConfigureFragment.remapPrefs;
+
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
@@ -80,7 +93,7 @@ public class WeatherAppWidgetProvider extends AppWidgetProvider {
             if (LOGGING) {
                 Log.i(TAG, "onDeleted: " + id);
             }
-            WeatherAppWidgetConfigureFragment.clearPrefs(context, id);
+            clearPrefs(context, id);
         }
     }
 
@@ -91,7 +104,7 @@ public class WeatherAppWidgetProvider extends AppWidgetProvider {
             if (LOGGING) {
                 Log.i(TAG, "onRestored " + oldWidgetId + " " + newWidgetIds[i]);
             }
-            WeatherAppWidgetConfigureFragment.remapPrefs(context, oldWidgetId, newWidgetIds[i]);
+            remapPrefs(context, oldWidgetId, newWidgetIds[i]);
             i++;
         }
     }
@@ -170,11 +183,13 @@ public class WeatherAppWidgetProvider extends AppWidgetProvider {
         OmniJawsClient weatherClient = new OmniJawsClient(context.getApplicationContext());
         weatherClient.queryWeather();
 
-        appWidgetManager.updateAppWidget(appWidgetId, createRemoteViews(context, appWidgetManager, appWidgetId, weatherClient));
+        appWidgetManager.updateAppWidget(appWidgetId, createRemoteViews(
+                context, appWidgetManager, appWidgetId, weatherClient));
     }
 
-    private static void setupRemoteView(Context context, AppWidgetManager appWidgetManager, int appWidgetId,
-                                        RemoteViews widget, OmniJawsClient weatherClient, boolean withForecast) {
+    private static void setupRemoteView(Context context, AppWidgetManager appWidgetManager,
+                                        int appWidgetId, RemoteViews widget, OmniJawsClient weatherClient,
+                                        boolean withForecast, int bgTrans) {
         if (!Config.isEnabled(context)) {
             showError(context, appWidgetManager, appWidgetId, EXTRA_ERROR_DISABLED, widget);
             return;
@@ -191,15 +206,16 @@ public class WeatherAppWidgetProvider extends AppWidgetProvider {
             widget.setViewVisibility(R.id.current_weather_line, View.GONE);
             widget.setViewVisibility(R.id.current_condition_line, View.GONE);
             widget.setViewVisibility(R.id.info_container, View.VISIBLE);
-            widget.setTextViewText(R.id.info_text, context.getResources().getString(R.string.omnijaws_service_waiting));
+            widget.setTextViewText(R.id.info_text,
+                    context.getResources().getString(R.string.omnijaws_service_waiting));
             return;
         }
 
         SimpleDateFormat sdf = new SimpleDateFormat("EE");
         Calendar cal = Calendar.getInstance();
         String dayShort = sdf.format(new Date(cal.getTimeInMillis()));
-        String forecastData = getWeatherDataString(weatherData.forecasts.get(0).low, weatherData.forecasts.get(0).high,
-                weatherData.tempUnits);
+        String forecastData = getWeatherDataString(weatherData.forecasts.get(0).low,
+                weatherData.forecasts.get(0).high, weatherData.tempUnits);
 
         Drawable d = weatherClient.getWeatherConditionImage(weatherData.forecasts.get(0).conditionCode);
         BitmapDrawable bd = getBitmapDrawable(context, d);
@@ -209,8 +225,8 @@ public class WeatherAppWidgetProvider extends AppWidgetProvider {
 
         cal.add(Calendar.DATE, 1);
         dayShort = sdf.format(new Date(cal.getTimeInMillis()));
-        forecastData = getWeatherDataString(weatherData.forecasts.get(1).low, weatherData.forecasts.get(1).high,
-                weatherData.tempUnits);
+        forecastData = getWeatherDataString(weatherData.forecasts.get(1).low,
+                weatherData.forecasts.get(1).high, weatherData.tempUnits);
         d = weatherClient.getWeatherConditionImage(weatherData.forecasts.get(1).conditionCode);
         bd = getBitmapDrawable(context, d);
         widget.setImageViewBitmap(R.id.forecast_image_1, bd.getBitmap());
@@ -219,8 +235,8 @@ public class WeatherAppWidgetProvider extends AppWidgetProvider {
 
         cal.add(Calendar.DATE, 1);
         dayShort = sdf.format(new Date(cal.getTimeInMillis()));
-        forecastData = getWeatherDataString(weatherData.forecasts.get(2).low, weatherData.forecasts.get(2).high,
-                weatherData.tempUnits);
+        forecastData = getWeatherDataString(weatherData.forecasts.get(2).low,
+                weatherData.forecasts.get(2).high, weatherData.tempUnits);
         d = weatherClient.getWeatherConditionImage(weatherData.forecasts.get(2).conditionCode);
         bd = getBitmapDrawable(context, d);
         widget.setImageViewBitmap(R.id.forecast_image_2, bd.getBitmap());
@@ -229,8 +245,8 @@ public class WeatherAppWidgetProvider extends AppWidgetProvider {
 
         cal.add(Calendar.DATE, 1);
         dayShort = sdf.format(new Date(cal.getTimeInMillis()));
-        forecastData = getWeatherDataString(weatherData.forecasts.get(3).low, weatherData.forecasts.get(3).high,
-                weatherData.tempUnits);
+        forecastData = getWeatherDataString(weatherData.forecasts.get(3).low,
+                weatherData.forecasts.get(3).high, weatherData.tempUnits);
         d = weatherClient.getWeatherConditionImage(weatherData.forecasts.get(3).conditionCode);
         bd = getBitmapDrawable(context, d);
         widget.setImageViewBitmap(R.id.forecast_image_3, bd.getBitmap());
@@ -239,8 +255,8 @@ public class WeatherAppWidgetProvider extends AppWidgetProvider {
 
         cal.add(Calendar.DATE, 1);
         dayShort = sdf.format(new Date(cal.getTimeInMillis()));
-        forecastData = getWeatherDataString(weatherData.forecasts.get(4).low, weatherData.forecasts.get(4).high,
-                weatherData.tempUnits);
+        forecastData = getWeatherDataString(weatherData.forecasts.get(4).low,
+                weatherData.forecasts.get(4).high, weatherData.tempUnits);
         d = weatherClient.getWeatherConditionImage(weatherData.forecasts.get(4).conditionCode);
         bd = getBitmapDrawable(context, d);
         widget.setImageViewBitmap(R.id.forecast_image_4, bd.getBitmap());
@@ -251,35 +267,55 @@ public class WeatherAppWidgetProvider extends AppWidgetProvider {
         d = weatherClient.getWeatherConditionImage(weatherData.conditionCode);
         bd = getBitmapDrawable(context, d);
         widget.setImageViewBitmap(R.id.current_image, bd.getBitmap());
-        widget.setTextViewText(R.id.current_text, context.getResources().getText(R.string.omnijaws_current_text));
+        widget.setTextViewText(R.id.current_text,
+                context.getResources().getText(R.string.omnijaws_current_text));
         widget.setTextViewText(R.id.current_data, currentData);
         widget.setTextViewText(R.id.current_weather_city, weatherData.city);
-        widget.setImageViewResource(R.id.current_humidity_image, R.drawable.ic_humidity_symbol_small);
+        widget.setImageViewResource(R.id.current_humidity_image,
+                R.drawable.ic_humidity_symbol_small);
         widget.setTextViewText(R.id.current_humidity, weatherData.humidity);
-        widget.setImageViewResource(R.id.current_wind_image, R.drawable.ic_wind_symbol_small);
-        widget.setTextViewText(R.id.current_wind, weatherData.windSpeed + " " + weatherData.windUnits);
-        widget.setImageViewResource(R.id.current_wind_direction_image, R.drawable.ic_wind_direction_symbol_small);
+        widget.setImageViewResource(R.id.current_wind_image,
+                R.drawable.ic_wind_symbol_small);
+        widget.setTextViewText(R.id.current_wind,
+                weatherData.windSpeed + " " + weatherData.windUnits);
+        widget.setImageViewResource(R.id.current_wind_direction_image,
+                R.drawable.ic_wind_direction_symbol_small);
         widget.setTextViewText(R.id.current_wind_direction, weatherData.pinWheel);
+
+        float alpha = 0.8f; // BG_TRANS_SEMI
+        switch (bgTrans) {
+            case BG_TRANS_FULL:
+                alpha = 0f;
+                break;
+            case BG_TRANS_SOLID:
+                alpha = 1f;
+                break;
+            default:
+        }
+        widget.setFloat(R.id.background, "setAlpha", alpha);
 
         Bundle options = appWidgetManager.getAppWidgetOptions(appWidgetId);
         int minWidth = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH);
         boolean showConditionLine = minWidth > 300;
-        widget.setViewVisibility(R.id.current_condition_line, showConditionLine ? View.VISIBLE : View.GONE);
+        widget.setViewVisibility(R.id.current_condition_line,
+                showConditionLine ? View.VISIBLE : View.GONE);
     }
 
-    public static RemoteViews createRemoteViews(Context context, AppWidgetManager appWidgetManager, int appWidgetId, OmniJawsClient weatherClient) {
+    public static RemoteViews createRemoteViews(Context context, AppWidgetManager appWidgetManager,
+            int appWidgetId, OmniJawsClient weatherClient) {
         if (LOGGING) {
             Log.i(TAG, "createRemoteViews");
         }
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        int theme = prefs.getInt(WeatherAppWidgetConfigureFragment.KEY_COLOR_THEME + "_" + appWidgetId, WeatherAppWidgetConfigureFragment.COLOR_THEME_DEFAULT);
+        int theme = prefs.getInt(KEY_COLOR_THEME + "_" + appWidgetId, COLOR_THEME_DEFAULT);
+        int bgTrans = prefs.getInt(KEY_BG_TRANS + "_" + appWidgetId, BG_TRANS_DEFAULT);
 
         int smallWidgetResId = R.layout.weather_appwidget_small_system;
         int largelWidgetResId = R.layout.weather_appwidget_large_system;
         int wideWidgetResId = R.layout.weather_appwidget_wide_system;
 
         switch (theme) {
-            case 1:
+            case COLOR_THEME_SYSTEM:
                 if (weatherClient.isOutlineIconPackage()) {
                     smallWidgetResId = R.layout.weather_appwidget_small_tint_system;
                     largelWidgetResId = R.layout.weather_appwidget_large_tint_system;
@@ -290,7 +326,7 @@ public class WeatherAppWidgetProvider extends AppWidgetProvider {
                     wideWidgetResId = R.layout.weather_appwidget_wide_system;
                 }
                 break;
-            case 2:
+            case COLOR_THEME_DARK:
                 if (weatherClient.isOutlineIconPackage()) {
                     smallWidgetResId = R.layout.weather_appwidget_small_tint_dark;
                     largelWidgetResId = R.layout.weather_appwidget_large_tint_dark;
@@ -301,7 +337,7 @@ public class WeatherAppWidgetProvider extends AppWidgetProvider {
                     wideWidgetResId = R.layout.weather_appwidget_wide_dark;
                 }
                 break;
-            case 3:
+            case COLOR_THEME_LIGHT:
                 if (weatherClient.isOutlineIconPackage()) {
                     smallWidgetResId = R.layout.weather_appwidget_small_tint_light;
                     largelWidgetResId = R.layout.weather_appwidget_large_tint_light;
@@ -314,11 +350,14 @@ public class WeatherAppWidgetProvider extends AppWidgetProvider {
                 break;
         }
         RemoteViews smallView = new RemoteViews(context.getPackageName(), smallWidgetResId);
-        setupRemoteView(context, appWidgetManager, appWidgetId, smallView, weatherClient, false);
+        setupRemoteView(context, appWidgetManager, appWidgetId, smallView,
+                weatherClient, false, bgTrans);
         RemoteViews largeView = new RemoteViews(context.getPackageName(), largelWidgetResId);
-        setupRemoteView(context, appWidgetManager, appWidgetId, largeView, weatherClient, true);
+        setupRemoteView(context, appWidgetManager, appWidgetId, largeView,
+                weatherClient, true, bgTrans);
         RemoteViews wideView = new RemoteViews(context.getPackageName(), wideWidgetResId);
-        setupRemoteView(context, appWidgetManager, appWidgetId, wideView, weatherClient, true);
+        setupRemoteView(context, appWidgetManager, appWidgetId, wideView,
+                weatherClient, true, bgTrans);
         Map<SizeF, RemoteViews> viewMapping = new ArrayMap<>();
         viewMapping.put(new SizeF(50f, 50f), smallView);
         viewMapping.put(new SizeF(260f, 150f), largeView);
@@ -327,8 +366,8 @@ public class WeatherAppWidgetProvider extends AppWidgetProvider {
         return remoteViews;
     }
 
-    private static void showError(
-            Context context, AppWidgetManager appWidgetManager, int appWidgetId, int errorReason, RemoteViews widget) {
+    private static void showError(Context context, AppWidgetManager appWidgetManager, int appWidgetId,
+            int errorReason, RemoteViews widget) {
 
         if (LOGGING) {
             Log.i(TAG, "showError " + appWidgetId + " errorReason = " + errorReason);
@@ -342,14 +381,16 @@ public class WeatherAppWidgetProvider extends AppWidgetProvider {
             widget.setViewVisibility(R.id.current_weather_line, View.GONE);
             widget.setViewVisibility(R.id.current_condition_line, View.GONE);
             widget.setViewVisibility(R.id.info_container, View.VISIBLE);
-            widget.setTextViewText(R.id.info_text, context.getResources().getString(R.string.omnijaws_service_disabled));
+            widget.setTextViewText(R.id.info_text,
+                    context.getResources().getString(R.string.omnijaws_service_disabled));
         } else {
             // should never happen
             widget.setViewVisibility(R.id.forecast_line, View.GONE);
             widget.setViewVisibility(R.id.current_weather_line, View.GONE);
             widget.setViewVisibility(R.id.current_condition_line, View.GONE);
             widget.setViewVisibility(R.id.info_container, View.VISIBLE);
-            widget.setTextViewText(R.id.info_text, context.getResources().getString(R.string.omnijaws_service_unkown));
+            widget.setTextViewText(R.id.info_text,
+                    context.getResources().getString(R.string.omnijaws_service_unkown));
         }
     }
 
@@ -385,7 +426,8 @@ public class WeatherAppWidgetProvider extends AppWidgetProvider {
 
     public static void updateAllWidgets(Context context) {
         AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
-        ComponentName thisAppWidgetComponentName = new ComponentName(context, WeatherAppWidgetProvider.class);
+        ComponentName thisAppWidgetComponentName = new ComponentName(
+                context, WeatherAppWidgetProvider.class);
         int[] appWidgetIds = appWidgetManager.getAppWidgetIds(thisAppWidgetComponentName);
         for (int appWidgetId : appWidgetIds) {
             WeatherAppWidgetProvider.updateWeather(context, appWidgetManager, appWidgetId);
@@ -394,7 +436,8 @@ public class WeatherAppWidgetProvider extends AppWidgetProvider {
 
     public static void disableAllWidgets(Context context) {
         AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
-        ComponentName thisAppWidgetComponentName = new ComponentName(context, WeatherAppWidgetProvider.class);
+        ComponentName thisAppWidgetComponentName = new ComponentName(
+                context, WeatherAppWidgetProvider.class);
         int[] appWidgetIds = appWidgetManager.getAppWidgetIds(thisAppWidgetComponentName);
         for (int appWidgetId : appWidgetIds) {
             WeatherAppWidgetProvider.updateWeather(context, appWidgetManager, appWidgetId);

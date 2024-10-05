@@ -59,4 +59,14 @@
         <item>2</item>
         <item>1</item>
     </string-array>
+    <string-array name="bg_transparency_entries" translatable="false">
+        <item>@string/trans_semi</item>
+        <item>@string/trans_full</item>
+        <item>@string/trans_solid</item>
+    </string-array>
+    <string-array name="bg_transparency_values" translatable="false">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+    </string-array>
 </resources>

@@ -20,7 +20,7 @@
     android:theme="@style/Theme.Material3.DynamicColors.DayNight">
 
     <LinearLayout
-        android:id="@android:id/background"
+        android:id="@+id/background"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@drawable/weather_appwidget_bg"
