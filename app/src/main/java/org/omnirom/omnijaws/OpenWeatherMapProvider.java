@@ -94,7 +94,7 @@ public class OpenWeatherMapProvider extends AbstractWeatherProvider {
                     /* temperature */ sanitizeTemperature(conditionData.getDouble("temp"), metric),
                     /* humidity */ (float) conditionData.getDouble("humidity"),
                     /* wind */ windSpeed,
-                    /* windDir */ conditionData.has("WIND_deg") ? conditionData.getInt("wind_deg") : 0,
+                    /* windDir */ conditionData.has("wind_deg") ? conditionData.getInt("wind_deg") : 0,
                     metric,
                     forecasts,
                     System.currentTimeMillis());
