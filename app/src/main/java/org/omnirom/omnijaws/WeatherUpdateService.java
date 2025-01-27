@@ -243,6 +243,12 @@ public class WeatherUpdateService extends JobService {
         jobScheduler.cancelAll();
     }
 
+    public static void disabledCall(Context context) {
+        Intent errorIntent = new Intent(ACTION_ERROR);
+        errorIntent.putExtra(EXTRA_ERROR, EXTRA_ERROR_DISABLED);
+        context.sendBroadcast(errorIntent);
+    }
+
     private void updateWeather() {
         mHandler.post(new Runnable() {
             @Override
