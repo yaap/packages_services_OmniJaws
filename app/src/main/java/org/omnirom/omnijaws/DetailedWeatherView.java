@@ -135,7 +135,7 @@ public class DetailedWeatherView extends FrameLayout {
             setErrorView();
             if (!serviceDisabled) {
                 mEmptyViewImage.setImageResource(R.drawable.ic_qs_weather_default_on);
-                mStatusMsg.setText(getResources().getString(R.string.omnijaws_service_waiting));
+                mStatusMsg.setText(getResources().getString(R.string.omnijaws_service_error_long));
             } else {
                 mEmptyViewImage.setImageResource(R.drawable.ic_qs_weather_default_off);
                 mStatusMsg.setText(getResources().getString(R.string.omnijaws_service_disabled));

@@ -60,6 +60,7 @@ public class OpenWeatherMapProvider extends AbstractWeatherProvider {
 
     private WeatherInfo handleWeatherRequest(String selection, boolean metric) {
         if (!mHasAPIKey) {
+            log(TAG, "no API key provided");
             return null;
         }
         mRequestNumber++;

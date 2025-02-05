@@ -206,7 +206,7 @@ public class WeatherAppWidgetProvider extends AppWidgetProvider {
             widget.setViewVisibility(R.id.current_condition_line, View.GONE);
             widget.setViewVisibility(R.id.info_container, View.VISIBLE);
             widget.setTextViewText(R.id.info_text,
-                    context.getResources().getString(R.string.omnijaws_service_waiting));
+                    context.getResources().getString(R.string.omnijaws_service_error_long));
             return;
         }
 

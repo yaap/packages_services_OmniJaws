@@ -304,7 +304,11 @@ public class WeatherUpdateService extends JobService {
                 } finally {
                     if (w == null) {
                         // error
+                        Log.d(TAG, "clear weather data");
                         Config.setUpdateError(WeatherUpdateService.this, true);
+                        Config.clearWeatherData(WeatherUpdateService.this);
+                        WeatherContentProvider.updateCachedWeatherInfo(WeatherUpdateService.this);
+                        WeatherAppWidgetProvider.updateAllWidgets(WeatherUpdateService.this);
                     }
                     // send broadcast that something has changed
                     Intent updateIntent = new Intent(ACTION_BROADCAST);
