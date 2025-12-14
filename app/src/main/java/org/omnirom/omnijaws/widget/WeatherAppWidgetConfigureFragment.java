@@ -26,10 +26,11 @@ import org.omnirom.omnijaws.R;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.Preference.OnPreferenceChangeListener;
-import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
 
-public class WeatherAppWidgetConfigureFragment extends PreferenceFragmentCompat
+import com.android.settingslib.widget.SettingsBasePreferenceFragment;
+
+public class WeatherAppWidgetConfigureFragment extends SettingsBasePreferenceFragment
         implements OnPreferenceChangeListener {
 
     public static final String KEY_COLOR_THEME = "color_theme";
